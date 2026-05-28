@@ -19,6 +19,8 @@ public class TransferEntity implements Serializable {
 
     private String clientOrigin;
 
+    private String clientDestiny;
+
     private String nameTransfer;
 
     private BigDecimal amount;

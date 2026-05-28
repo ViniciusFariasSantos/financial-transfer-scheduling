@@ -23,8 +23,8 @@ export class ClientService {
     return this.http.post<ClientResponse>(this.api, transaction);
   }
 
-  public updateTransaction(transaction: ClientRequest) : Observable<ClientResponse> {
-    return this.http.put<ClientResponse>(`${this.api}/${transaction.numberAccount }`, transaction);
+  public updateTransaction(id: number, transaction: ClientRequest) : Observable<ClientResponse> {
+    return this.http.put<ClientResponse>(`${this.api}/${id}`, transaction);
   }
 
   public deleteTransaction(id: number) : Observable<void> {

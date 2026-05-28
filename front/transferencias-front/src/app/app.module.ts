@@ -6,6 +6,8 @@ import { AppComponent } from './app.component';
 import { TransferService } from './service/transfer.service';
 import { DialogCrudComponent } from './feature/dialog-crud/dialog-crud.component';
 import { TableCrudComponent } from './feature/table-crud/table-crud.component';
+import { BrlCurrencyPipe } from './pipe/brl-currency.pipe';
+import { BrlDatePipe } from './pipe/brl-date.pipe';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatIconModule} from  '@angular/material/icon' ;
 import {MatTableModule} from  '@angular/material/table' ;
@@ -18,12 +20,16 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormsModule} from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
   declarations: [
     AppComponent,
     DialogCrudComponent,
     TableCrudComponent,
+    BrlCurrencyPipe,
+    BrlDatePipe,
   ],
   imports: [
     HttpClientModule,
@@ -39,6 +45,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatFormFieldModule, 
     MatInputModule,
     MatSnackBarModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   providers: [
     HttpClient,

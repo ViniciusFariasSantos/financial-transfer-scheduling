@@ -74,6 +74,9 @@ public class TransferService {
         );
 
         transfer.setClientOrigin(
+                dto.getClientOrigin()
+        );
+        transfer.setClientDestiny(
                 dto.getClientDestiny()
         );
 

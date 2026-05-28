@@ -4,68 +4,6 @@ import { DialogCrudComponent } from '../dialog-crud/dialog-crud.component';
 import { ClientService } from 'src/app/service/client.service';
 import { ClientResponse } from 'src/app/model/client.model';
 
-const ELEMENT_DATA: ClientResponse[] = [
-  {
-    id: 1, name: 'Hydrogen', numberAccount: "1.0079", amount: 0,
-    tax: '',
-    dateTransfer: '',
-    dateScheduling: ''
-  },
-  {
-    id: 2, name: 'Helium', numberAccount: "4.0026", amount: 0,
-    tax: '',
-    dateTransfer: '',
-    dateScheduling: ''
-  },
-  {
-    id: 3, name: 'Lithium', numberAccount: "6.941", amount: 0,
-    tax: '',
-    dateTransfer: '',
-    dateScheduling: ''
-  },
-  {
-    id: 4, name: 'Beryllium', numberAccount: "9.0122", amount: 0,
-    tax: '',
-    dateTransfer: '',
-    dateScheduling: ''
-  },
-  {
-    id: 5, name: 'Boron', numberAccount: "10.811", amount: 0,
-    tax: '',
-    dateTransfer: '',
-    dateScheduling: ''
-  },
-  {
-    id: 6, name: 'Carbon', numberAccount: "12.0107", amount: 0,
-    tax: '',
-    dateTransfer: '',
-    dateScheduling: ''
-  },
-  {
-    id: 7, name: 'Nitrogen', numberAccount: "14.0067", amount: 0,
-    tax: '',
-    dateTransfer: '',
-    dateScheduling: ''
-  },
-  {
-    id: 8, name: 'Oxygen', numberAccount: "15.9994", amount: 0,
-    tax: '',
-    dateTransfer: '',
-    dateScheduling: ''
-  },
-  {
-    id: 9, name: 'Fluorine', numberAccount: "18.9984", amount: 0,
-    tax: '',
-    dateTransfer: '',
-    dateScheduling: ''
-  },
-  {
-    id: 10, name: 'Neon', numberAccount: "20.1797", amount: 0,
-    tax: '',
-    dateTransfer: '',
-    dateScheduling: ''
-  },
-];
 
 @Component({
   selector: 'app-table-crud',
@@ -74,8 +12,6 @@ const ELEMENT_DATA: ClientResponse[] = [
 })
 export class TableCrudComponent implements OnInit {
 
-   displayedColumns2: string[] = ['position', 'name', 'numberAccount', 'amount'];
-  dataSource2 = ELEMENT_DATA;
   public dataSource: ClientResponse[] = []; 
   displayedColumns: string[] = [
       'id',
@@ -86,7 +22,7 @@ export class TableCrudComponent implements OnInit {
       'read',
       'delete',
       'cash',
-      'transfer'
+      'extract'
     ];
   constructor(
     public readonly dialog: MatDialog,
@@ -116,6 +52,9 @@ export class TableCrudComponent implements OnInit {
         break;
       case 'T':
         this.openDialog(dataUser,  'Transferência');
+        break;
+      case 'X':
+        this.openDialog(dataUser,  'Extrato');
         break;
       default:
         break;
