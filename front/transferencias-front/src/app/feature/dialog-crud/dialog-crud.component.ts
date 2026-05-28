@@ -59,6 +59,10 @@ export class DialogCrudComponent implements OnInit {
     )
     {}
     ngOnInit(): void {
+      this.booleanName = false;
+      this.booleanTransfer = false;
+      this.booleanExtract = false;
+
       switch (this.data.name) {
         case 'Consultar':
         case 'Deletar':

@@ -7,46 +7,63 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DialogCrudComponent } from './dialog-crud.component';
-import { TransactionService } from '../service/transaction.service';
-import { Transaction } from '../model/transaction.model';
-import { Transfer } from '../model/transfer.model';
+import { ClientService } from 'src/app/service/client.service';
+import { TransferService } from 'src/app/service/transfer.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ClientRequest, ClientResponse } from 'src/app/model/client.model';
+import { TransferRequest, TransferResponse } from 'src/app/model/tranfer.model';
+import { BrlCurrencyPipe } from 'src/app/pipe/brl-currency.pipe';
+import { BrlDatePipe } from 'src/app/pipe/brl-date.pipe';
 
 describe('DialogCrudComponent', () => {
   let component: DialogCrudComponent;
   let fixture: ComponentFixture<DialogCrudComponent>;
-  let transactionServiceSpy: jasmine.SpyObj<TransactionService>;
+  let clientServiceSpy: jasmine.SpyObj<ClientService>;
+  let transferServiceSpy: jasmine.SpyObj<TransferService>;
+  let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
 
   const defaultData = {
     dataUser: {
       id: 1,
-      nome: 'Teste',
-      descricao: 'Descrição teste',
-      valor: 100,
-      ativo: true,
-      version: '1'
-    } as Transaction,
+      name: 'Teste',
+      numberAccount: '12345',
+      amount: 100,
+      tax: '0',
+      dateTransfer: '2026-04-01',
+      dateScheduling: '2026-04-10'
+    } as ClientResponse,
     name: 'Consultar'
   };
 
   beforeEach(async () => {
-    transactionServiceSpy = jasmine.createSpyObj('TransactionService', [
+    clientServiceSpy = jasmine.createSpyObj('ClientService', [
       'saveTransaction',
       'updateTransaction',
       'deleteTransaction',
-      'transferValue'
+      'getAllTransactions'
     ]);
 
-    transactionServiceSpy.saveTransaction.and.returnValue(of(defaultData.dataUser));
-    transactionServiceSpy.updateTransaction.and.returnValue(of(defaultData.dataUser));
-    transactionServiceSpy.deleteTransaction.and.returnValue(of(void 0));
-    transactionServiceSpy.transferValue.and.returnValue(of({ fromId: 0, toId: 0, amount: 0 } as Transfer));
+    transferServiceSpy = jasmine.createSpyObj('TransferService', [
+      'salvar',
+      'listar'
+    ]);
+
+    snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
+
+    clientServiceSpy.saveTransaction.and.returnValue(of(defaultData.dataUser));
+    clientServiceSpy.updateTransaction.and.returnValue(of(defaultData.dataUser));
+    clientServiceSpy.deleteTransaction.and.returnValue(of(void 0));
+    transferServiceSpy.salvar.and.returnValue(of({} as TransferResponse));
+    transferServiceSpy.listar.and.returnValue(of([] as TransferResponse[]));
 
     await TestBed.configureTestingModule({
       imports: [FormsModule],
-      declarations: [DialogCrudComponent],
+      declarations: [DialogCrudComponent, BrlCurrencyPipe, BrlDatePipe],
       providers: [
         { provide: MAT_DIALOG_DATA, useValue: defaultData },
-        { provide: TransactionService, useValue: transactionServiceSpy }
+        { provide: ClientService, useValue: clientServiceSpy },
+        { provide: TransferService, useValue: transferServiceSpy },
+        { provide: MatSnackBar, useValue: snackBarSpy }
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
@@ -69,23 +86,21 @@ describe('DialogCrudComponent', () => {
   });
 
   it('should set booleanTransfer when name is Transferência', () => {
-    // Create a fresh component instance for this test
-    const freshComponent = new DialogCrudComponent(defaultData, transactionServiceSpy);
-    freshComponent.data.name = 'Transferência';
-    freshComponent.ngOnInit();
+    component.data.name = 'Transferência';
+    component.ngOnInit();
 
-    expect(freshComponent.booleanTransfer).toBeTrue();
-    expect(freshComponent.booleanName).toBeFalse();
+    expect(component.booleanTransfer).toBeTrue();
+    expect(component.booleanName).toBeFalse();
   });
 
   it('should initialize user and transfer from dataUser', () => {
-    component.data.name = 'Consultar';
     component.data.dataUser = defaultData.dataUser;
     component.ngOnInit();
 
-    expect(component.user).toEqual(defaultData.dataUser);
-    expect(component.transfer.toId).toBe(defaultData.dataUser.id);
-    expect(component.transfer.amount).toBe(defaultData.dataUser.valor);
+    expect(component.user.numberAccount).toBe(defaultData.dataUser.numberAccount);
+    expect(component.user.amount).toBe(defaultData.dataUser.amount);
+    expect(component.transfer.clientOrigin).toBe(defaultData.dataUser.numberAccount);
+    expect(component.transfer.amount).toBe(defaultData.dataUser.amount);
   });
 
   describe('clickButton', () => {
@@ -93,28 +108,30 @@ describe('DialogCrudComponent', () => {
       component.data.name = 'Adicionar';
       component.clickButton();
 
-      expect(transactionServiceSpy.saveTransaction).toHaveBeenCalledWith(component.user);
+      expect(clientServiceSpy.saveTransaction).toHaveBeenCalledWith(component.user);
     });
 
     it('should call updateTransaction for Editar', () => {
       component.data.name = 'Editar';
+      component.data.dataUser = defaultData.dataUser;
       component.clickButton();
 
-      expect(transactionServiceSpy.updateTransaction).toHaveBeenCalledWith(component.user);
+      expect(clientServiceSpy.updateTransaction).toHaveBeenCalledWith(defaultData.dataUser.id, component.user);
     });
 
     it('should call deleteTransaction for Deletar', () => {
       component.data.name = 'Deletar';
+      component.data.dataUser = defaultData.dataUser;
       component.clickButton();
 
-      expect(transactionServiceSpy.deleteTransaction).toHaveBeenCalledWith(component.user.id);
+      expect(clientServiceSpy.deleteTransaction).toHaveBeenCalledWith(defaultData.dataUser.id);
     });
 
-    it('should call transferValue for Transferência', () => {
+    it('should call transferService.salvar for Transferência', () => {
       component.data.name = 'Transferência';
       component.clickButton();
 
-      expect(transactionServiceSpy.transferValue).toHaveBeenCalledWith(component.transfer);
+      expect(transferServiceSpy.salvar).toHaveBeenCalledWith(jasmine.objectContaining({ clientOrigin: component.transfer.clientOrigin }));
     });
   });
 });

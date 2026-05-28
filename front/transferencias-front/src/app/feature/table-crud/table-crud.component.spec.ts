@@ -1,41 +1,43 @@
 /// <reference types="jasmine" />
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { TableCrudComponent } from './table-crud.component';
-import { TransactionService } from '../service/transaction.service';
-import { Transaction } from '../model/transaction.model';
+import { ClientService } from 'src/app/service/client.service';
+import { ClientResponse } from 'src/app/model/client.model';
 
 describe('TableCrudComponent', () => {
   let component: TableCrudComponent;
   let fixture: ComponentFixture<TableCrudComponent>;
-  let transactionServiceSpy: jasmine.SpyObj<TransactionService>;
+  let clientServiceSpy: jasmine.SpyObj<ClientService>;
   let matDialogSpy: jasmine.SpyObj<MatDialog>;
 
-  const mockTransactions: Transaction[] = [
+  const mockClients: ClientResponse[] = [
     {
       id: 1,
-      nome: 'Conta 1',
-      descricao: 'Descrição 1',
-      valor: 100,
-      ativo: true,
-      version: '1'
+      name: 'Conta 1',
+      numberAccount: '111',
+      amount: 100,
+      tax: '0',
+      dateTransfer: '2026-04-01',
+      dateScheduling: '2026-04-10'
     },
     {
       id: 2,
-      nome: 'Conta 2',
-      descricao: 'Descrição 2',
-      valor: 200,
-      ativo: true,
-      version: '1'
+      name: 'Conta 2',
+      numberAccount: '222',
+      amount: 200,
+      tax: '0',
+      dateTransfer: '2026-04-02',
+      dateScheduling: '2026-04-11'
     }
   ];
 
   beforeEach(async () => {
-    transactionServiceSpy = jasmine.createSpyObj('TransactionService', [
+    clientServiceSpy = jasmine.createSpyObj('ClientService', [
       'getAllTransactions'
     ]);
 
@@ -43,7 +45,7 @@ describe('TableCrudComponent', () => {
       'open'
     ]);
 
-    transactionServiceSpy.getAllTransactions.and.returnValue(of(mockTransactions));
+    clientServiceSpy.getAllTransactions.and.returnValue(of(mockClients));
 
     const mockDialogRef = jasmine.createSpyObj('MatDialogRef', [], {
       afterClosed: jasmine.createSpy('afterClosed').and.returnValue(of(null))
@@ -53,7 +55,7 @@ describe('TableCrudComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [TableCrudComponent],
       providers: [
-        { provide: TransactionService, useValue: transactionServiceSpy },
+        { provide: ClientService, useValue: clientServiceSpy },
         { provide: MatDialog, useValue: matDialogSpy }
       ],
       schemas: [NO_ERRORS_SCHEMA]
@@ -71,12 +73,13 @@ describe('TableCrudComponent', () => {
     expect(component.displayedColumns).toEqual([
       'id',
       'name',
-      'description',
-      'value',
+      'numberAccount',
+      'amount',
       'edit',
       'read',
       'delete',
-      'cash'
+      'cash',
+      'extract'
     ]);
   });
 
@@ -84,8 +87,8 @@ describe('TableCrudComponent', () => {
     it('should call getAllTransactions on init', () => {
       component.ngOnInit();
 
-      expect(transactionServiceSpy.getAllTransactions).toHaveBeenCalled();
-      expect(component.dataSource).toEqual(mockTransactions);
+      expect(clientServiceSpy.getAllTransactions).toHaveBeenCalled();
+      expect(component.dataSource).toEqual(mockClients);
     });
   });
 
@@ -93,8 +96,8 @@ describe('TableCrudComponent', () => {
     it('should call service and update dataSource', () => {
       component.getAllTransactions();
 
-      expect(transactionServiceSpy.getAllTransactions).toHaveBeenCalled();
-      expect(component.dataSource).toEqual(mockTransactions);
+      expect(clientServiceSpy.getAllTransactions).toHaveBeenCalled();
+      expect(component.dataSource).toEqual(mockClients);
     });
   });
 
@@ -110,39 +113,39 @@ describe('TableCrudComponent', () => {
     it('should call openDialog with dataUser and Consultar for C', () => {
       spyOn(component, 'openDialog');
 
-      component.openDialogChosen(mockTransactions[0], 'C');
+      component.openDialogChosen(mockClients[0], 'C');
 
-      expect(component.openDialog).toHaveBeenCalledWith(mockTransactions[0], 'Consultar');
+      expect(component.openDialog).toHaveBeenCalledWith(mockClients[0], 'Consultar');
     });
 
     it('should call openDialog with dataUser and Editar for E', () => {
       spyOn(component, 'openDialog');
 
-      component.openDialogChosen(mockTransactions[0], 'E');
+      component.openDialogChosen(mockClients[0], 'E');
 
-      expect(component.openDialog).toHaveBeenCalledWith(mockTransactions[0], 'Editar');
+      expect(component.openDialog).toHaveBeenCalledWith(mockClients[0], 'Editar');
     });
 
     it('should call openDialog with dataUser and Deletar for D', () => {
       spyOn(component, 'openDialog');
 
-      component.openDialogChosen(mockTransactions[0], 'D');
+      component.openDialogChosen(mockClients[0], 'D');
 
-      expect(component.openDialog).toHaveBeenCalledWith(mockTransactions[0], 'Deletar');
+      expect(component.openDialog).toHaveBeenCalledWith(mockClients[0], 'Deletar');
     });
 
     it('should call openDialog with dataUser and Transferência for T', () => {
       spyOn(component, 'openDialog');
 
-      component.openDialogChosen(mockTransactions[0], 'T');
+      component.openDialogChosen(mockClients[0], 'T');
 
-      expect(component.openDialog).toHaveBeenCalledWith(mockTransactions[0], 'Transferência');
+      expect(component.openDialog).toHaveBeenCalledWith(mockClients[0], 'Transferência');
     });
 
     it('should not call openDialog for invalid code', () => {
       spyOn(component, 'openDialog');
 
-      component.openDialogChosen(mockTransactions[0], 'X');
+      component.openDialogChosen(mockClients[0], 'Z');
 
       expect(component.openDialog).not.toHaveBeenCalled();
     });
@@ -150,17 +153,17 @@ describe('TableCrudComponent', () => {
 
   describe('openDialog', () => {
     it('should open dialog with correct data', () => {
-      component.openDialog(mockTransactions[0], 'Editar');
+      component.openDialog(mockClients[0], 'Editar');
 
       expect(matDialogSpy.open).toHaveBeenCalledWith(jasmine.any(Function), {
-        data: { dataUser: mockTransactions[0], name: 'Editar' }
+        data: { dataUser: mockClients[0], name: 'Editar' }
       });
     });
 
     it('should call getAllTransactions after dialog closes', () => {
       spyOn(component, 'getAllTransactions');
 
-      component.openDialog(mockTransactions[0], 'Editar');
+      component.openDialog(mockClients[0], 'Editar');
 
       expect(component.getAllTransactions).toHaveBeenCalled();
     });
