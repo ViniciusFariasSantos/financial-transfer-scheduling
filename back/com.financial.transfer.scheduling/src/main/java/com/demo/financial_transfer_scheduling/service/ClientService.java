@@ -20,16 +20,18 @@ public class ClientService {
     }
 
     public ResponseEntity<List<ClientEntity> >listar() {
-        return ResponseEntity.status(HttpStatus.OK).body(repository.findAll());
+        return ResponseEntity.status(HttpStatus.OK).body(
+                repository.findAll()
+        );
     }
 
     public void salvar( ClientDTO dto) {
         ClientEntity clientEntity = new ClientEntity();
 
-        clientEntity.setNome(dto.getName());
-        clientEntity.setConta(dto.getNumberAccount());
-        clientEntity.setSaldo(dto.getAmount());
-        repository.findByConta(clientEntity.getConta())
+        clientEntity.setName(dto.getName());
+        clientEntity.setNumberAccount(dto.getNumberAccount());
+        clientEntity.setAmount(dto.getAmount());
+        repository.findByNumberAccount(clientEntity.getNumberAccount())
                 .ifPresent(client -> {
                     throw new BusinessException("Conta já cadastrada");
                 });
@@ -43,9 +45,9 @@ public class ClientService {
         if (clientEntity == null) {
             throw new BusinessException("Cliente não encontrado");
         }
-        clientEntity.setNome(dto.getName());
-        clientEntity.setConta(dto.getNumberAccount());
-        clientEntity.setSaldo(dto.getAmount());
+        clientEntity.setName(dto.getName());
+        clientEntity.setNumberAccount(dto.getNumberAccount());
+        clientEntity.setAmount(dto.getAmount());
 
         repository.save(clientEntity);
     }

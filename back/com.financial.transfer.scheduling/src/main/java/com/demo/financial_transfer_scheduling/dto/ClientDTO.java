@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,7 +20,7 @@ public class ClientDTO {
 
     private BigDecimal amount;
 
-    private BigDecimal amountScheduling;
+    private List<TranferSchedulingDTO> amountScheduling;
 
     private ClientEntity clientOrigin;
 

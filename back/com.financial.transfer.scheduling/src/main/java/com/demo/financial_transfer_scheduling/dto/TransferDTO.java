@@ -22,6 +22,6 @@ public class TransferDTO {
 
     private BigDecimal tax;
 
-    private LocalDate dataScheduling;
+    private LocalDate dateScheduling;
 
 }

@@ -16,22 +16,18 @@ public class ClientEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nome;
+    private String name;
 
     @Column(unique = true)
-    private String conta;
+    private String numberAccount;
 
-    private BigDecimal saldo;
+    private BigDecimal amount;
 
-    private BigDecimal Taxa;
+    private BigDecimal tax;
 
-    private BigDecimal saldoAgendado;
+    private LocalDate dateTransfer;
 
-    private LocalDate dataTransferencia;
+    private LocalDate dateScheduling;
 
-    private LocalDate dataAgendamento;
 
-    public void getDataTransferencia(LocalDate now) {
-
-    }
 }

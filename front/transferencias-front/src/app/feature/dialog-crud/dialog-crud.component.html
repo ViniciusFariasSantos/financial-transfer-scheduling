@@ -1,0 +1,43 @@
+<h2 mat-dialog-title>{{data.name}}</h2>
+<mat-dialog-content class="mat-typography" *ngIf="booleanTransfer === false">
+  <form class="example-form">
+    <mat-form-field class="example-full-width">
+      <mat-label>Nome</mat-label>
+      <input matInput [disabled]="booleanName" [(ngModel)]="user.name" name="name">
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+      <mat-label>Numero da Conta</mat-label>
+      <input matInput [disabled]="booleanName" [(ngModel)]="user.numberAccount" name="numberAccount">
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+      <mat-label>Valor</mat-label>
+      <input matInput [disabled]="booleanName" [(ngModel)]="user.amount" name="value">
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-content class="mat-typography" *ngIf="booleanTransfer === true">
+  <form class="example-form">
+    <mat-form-field class="example-full-width">
+      <mat-label>conta origem</mat-label>
+      <input matInput  disabled [(ngModel)]="transfer.clientOrigin" name="name">
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+      <mat-label>Conta Destino</mat-label>
+      <textarea matInput [(ngModel)]="transfer.clientDestiny" name="description"></textarea>
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+      <mat-label>Valor</mat-label>
+      <input matInput [(ngModel)]="transfer.amount" name="value">
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+      <mat-label>Data de Agendamento</mat-label>
+      <input matInput [(ngModel)]="transfer.dateScheduling" name="dateScheduling">
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button (click)="clickButton()">Confirmar</button>
+</mat-dialog-actions>

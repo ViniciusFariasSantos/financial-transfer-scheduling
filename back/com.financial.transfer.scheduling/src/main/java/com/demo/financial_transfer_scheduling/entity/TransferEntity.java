@@ -17,20 +17,16 @@ public class TransferEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "cliente_origem_id")
-    private ClientEntity clienteOrigem;
+    private String clientOrigin;
 
-    @ManyToOne
-    @JoinColumn(name = "cliente_destino_id")
-    private ClientEntity clienteDestino;
+    private String nameTransfer;
 
-    private BigDecimal valor;
+    private BigDecimal amount;
 
-    private BigDecimal taxa;
+    private BigDecimal tax;
 
-    private LocalDate dataTransferencia;
+    private LocalDate dateTransfer;
 
-    private LocalDate dataAgendamento;
+    private LocalDate dateScheduling;
 
 }
