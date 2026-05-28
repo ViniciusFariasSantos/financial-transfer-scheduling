@@ -35,35 +35,31 @@ public class TransferService {
     }
     public void transfer(TransferDTO dto) {
 
-        ClientEntity to   = repository.findAllByNumberAccount(dto.getClientOrigin());
-        ClientEntity from = repository.findAllByNumberAccount(dto.getClientDestiny());
+        if (dto.getAmount() == null || dto.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException("Valor inválido");
+        }
 
-        long dias =
-                ChronoUnit.DAYS.between(
-                        LocalDate.now(),
-                        dto.getDateScheduling()
-                );
+        if (dto.getDateScheduling() == null) {
+            throw new BusinessException("Data de agendamento inválida");
+        }
 
-        BigDecimal valueTax = dto.getAmount().add(calcularTaxa(dto.getAmount(), dias));
+        ClientEntity from = repository.findAllByNumberAccount(dto.getClientOrigin());
+        ClientEntity to = repository.findAllByNumberAccount(dto.getClientDestiny());
 
         if (from == null || to == null) {
             throw new BusinessException("Conta não encontrada");
         }
 
-        if (dto.getAmount() == null || dto.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new BusinessException("Valor inválido");
-        }
+        long dias = ChronoUnit.DAYS.between(LocalDate.now(), dto.getDateScheduling());
+        BigDecimal tax = calcularTaxa(dto.getAmount(), dias);
+        BigDecimal valueTax = dto.getAmount().add(tax);
 
         if (from.getAmount().compareTo(dto.getAmount()) < 0) {
             throw new BusinessException("Saldo insuficiente");
         }
 
-        TransferEntity transfer =
-                new TransferEntity();
-
-        transfer.setNameTransfer(
-                from.getName()
-        );
+        TransferEntity transfer = new TransferEntity();
+        transfer.setNameTransfer(from.getName());
 
         transfer.setAmount(
                 dto.getAmount()
@@ -73,31 +69,20 @@ public class TransferService {
                 LocalDate.now()
         );
 
-        transfer.setClientOrigin(
-                dto.getClientOrigin()
-        );
-        transfer.setClientDestiny(
-                dto.getClientDestiny()
-        );
+        transfer.setClientOrigin(dto.getClientOrigin());
+        transfer.setClientDestiny(dto.getClientDestiny());
+        transfer.setDateScheduling(dto.getDateScheduling());
+        transfer.setTax(tax);
 
-        transfer.setDateScheduling(
-                dto.getDateScheduling()
-        );
-        transfer.setTax(calcularTaxa(
-                dto.getAmount(), dias)
-        );
-
-        if (dto.getDateScheduling() == LocalDate.now() ){
-            to.setTax(calcularTaxa(dto.getAmount(), dias));
-            to.setAmount(to.getAmount().subtract(valueTax));
+        if (dto.getDateScheduling().isEqual(LocalDate.now())) {
+            from.setAmount(from.getAmount().subtract(valueTax));
+            to.setAmount(to.getAmount().add(dto.getAmount()));
+            to.setTax(tax);
             to.setDateScheduling(dto.getDateScheduling());
             to.setDateTransfer(LocalDate.now());
-            from.setAmount(from.getAmount().add(dto.getAmount()));
-        } else{
-            to.setTax(calcularTaxa( dto.getAmount(), dias));
-            to.setAmount(to.getAmount().subtract(valueTax));
-            to.setDateScheduling(dto.getDateScheduling());
-            to.setDateTransfer(LocalDate.now());
+            repositoryTransfer.save(transfer);
+        } else {
+            from.setAmount(from.getAmount().subtract(valueTax));
             repositoryTransfer.save(transfer);
         }
 
