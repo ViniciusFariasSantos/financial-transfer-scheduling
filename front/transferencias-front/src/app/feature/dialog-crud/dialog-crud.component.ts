@@ -17,8 +17,9 @@ export class DialogCrudComponent implements OnInit {
   public dataSource: TransferResponse[] = []; 
   displayedColumns: string[] = [
       'id',
-      'name',
-      'numberAccount',
+      'clientOrigin',
+      'clientDestiny',
+      'nameTransfer',
       'amount',
       'tax',
       'dateTransfer',

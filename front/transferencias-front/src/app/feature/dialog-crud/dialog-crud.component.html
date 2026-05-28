@@ -56,13 +56,17 @@
       <th mat-header-cell *matHeaderCellDef> ID</th>
       <td mat-cell *matCellDef="let element"> {{element.id}} </td>
     </ng-container>
-    <ng-container matColumnDef="numberAccount" >
-      <th mat-header-cell *matHeaderCellDef> Numero da Conta</th>
-      <td mat-cell *matCellDef="let element"> {{element.numberAccount}} </td>
+    <ng-container matColumnDef="clientOrigin" >
+      <th mat-header-cell *matHeaderCellDef> Conta Origem</th>
+      <td mat-cell *matCellDef="let element"> {{element.clientOrigin}} </td>
     </ng-container>
-    <ng-container matColumnDef="name" >
+    <ng-container matColumnDef="clientDestiny" >
+      <th mat-header-cell *matHeaderCellDef> Conta Destino</th>
+      <td mat-cell *matCellDef="let element"> {{element.clientDestiny}} </td>
+    </ng-container>
+    <ng-container matColumnDef="nameTransfer" >
       <th mat-header-cell *matHeaderCellDef> Nome </th>
-      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.nameTransfer}} </td>
     </ng-container>
 
     <ng-container matColumnDef="amount">
